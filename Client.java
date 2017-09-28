@@ -10,17 +10,14 @@ public class Client {
     private static final String localhost = "127.0.0.1";
 
     public static void main(String[] args) {
-        Socket socket = null;
         try{
-            try {
-                System.out.println("Welcome to Client side\n" +
-                        "Connecting to the server\n\t" +
-                        "(IP address " + localhost +
-                        ", port " + PORT + ")");
-                InetAddress ipAddress = InetAddress.getByName(localhost);
-                socket = new Socket(ipAddress, PORT);
+            System.out.println("Welcome to Client side\n" +
+                    "Connecting to the server\n\t" +
+                    "(IP address " + localhost +
+                    ", port " + PORT + ")");
+            InetAddress ipAddress = InetAddress.getByName(localhost);
+            try (Socket socket = new Socket(ipAddress, PORT)) {
                 System.out.println("The connection is established.");
-
                 System.out.println(
                         "\tLocalPort = " +
                                 socket.getLocalPort() +
@@ -32,10 +29,8 @@ public class Client {
                 DataInputStream in  = new DataInputStream (socket.getInputStream());
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-                // Создаем поток для чтения с клавиатуры.
-                InputStreamReader isr = new InputStreamReader(System.in);
-                BufferedReader keyboard = new BufferedReader(isr);
-                String line = null;
+                BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+                String line;
                 System.out.println("Type in something and press enter\n");
                 while (true) {
                     line = keyboard.readLine();
@@ -49,16 +44,9 @@ public class Client {
                                 "The server sent me this line :\n\t" + line);
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        } finally {
-            try {
-                if (socket != null)
-                    socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
